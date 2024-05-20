@@ -197,112 +197,76 @@ ssh -t hduser@DN2
 ------------------------
 web---http://master:9870
 ------------------------
- ========    now go to the master   node ==================
-
-                                make a dir
-                                   cd Desktop
-                                   mkdir /usr/local/hadoop/hd-data
-
-                        ========    now go to the datanode (DN1) ==================
-                          
-                                  mkdir /usr/local/hadoop/hd-data
-                                  mkdir /usr/local/hadoop/yarn
-           
-                      ========    now go to the datanode (DN2) ==================
-                          
-                                  mkdir /usr/local/hadoop/hd-data
-                                  mkdir /usr/local/hadoop/yarn
-
-
-                     ========    now go to the master   node ==================
-
-                                  hadoop namenode -format
-                                  ls /usr/local/hadoop/hd-data/nn
-                                  ls /usr/local/hadoop/hd-data/nn/current/
-                                  start-dfs.sh
-
-
-                        now try to ping each other
-                             create a dir and file.txt and try to copy or move in master
-                 
-                                      login to the browser
-                                            http://master:9870
-
-
-
-===========================================================================================================================================
-
-
-                                     now add a new node datanode (DN3)
-
-                             login to the master
-                                     ping to each other
-                                     start-all.sh
-                                     jps
-
-                           as we have taken a clone just open a datanode3(DN3)
-                                need to set the hostname
-                                    sudo hostnamectl set-hostname DN3
-                                    sudo hostname DN3
-                                    exit
-                                       open new terminal foor apply the changes done
-                                    ip a                                ......... 192.168.144.132 /24
-
-
-                                  ===================      go to master     =================
-                                         sudo nano /etc/hosts
-                                            192.168.144.132 DN3
-                                         nano /usr/local/hadoop/etc/hadoop/workers
-                                                   edit this file and DN3
-                                                        DN3
-
-                                   ===================      go to Datanode2     =================
-
-                                         jps
-                                         sudo nano /etc/hosts        
-                                              edit this file
-                                                   192.168.144.132 DN3
-
-                                          scp /etc/hosts hduser@DN3:/home/hduser        .......  copying the hostfile from DN2  and pate it DN3 
-                                                 if we want to copy same file that are too much at same dest use the below command 
-                                          rsync -a /usr/local/hadoop/etc/hadoop/* hduser@DN3:/usr/local/hadoop/etc/hadoop
-
-                                    
-                                   ===================      go to Datanode3     =================
-
-                                              cd
-                                              cat /etc/hosts
-                                              cd
-                                              ls
-                                              sudo cp hosts /etc/hosts
-                                              cat /etc/hosts
-                                              ping master
-                                              hadoop-daemon.sh start datanode                 ...(to start a individual machine use this command)
-                                              jps
-
-                                 ===================      go to Datanode1     =================
-
-                                             cd Desktop
-                                               jps
-                                               sudo nano /etc/hosts
-                                                        edit this file 
-                                                           192.168.144.132 DN3
-
-
-                               ===================      go to master    =================
-
-                                            hdfs dfsadmin -refreshnodes                     .......(and refersh in browser)
-
-
-                              ===================      go to Datanode3     =================
-
-                                          cd Desktop
-                                          yarn-daemon.sh start manager
-                                          jps
-                                
-                                ===================      go to master    =================
-                        
-                                       now in master you can create a dir and file and can perform any opertaion
+master   node =
+make a dir
+cd Desktop
+mkdir /usr/local/hadoop/hd-data
+datanode (DN1) ==================
+mkdir /usr/local/hadoop/hd-data
+mkdir /usr/local/hadoop/yarn
+datanode (DN2) ==================
+mkdir /usr/local/hadoop/hd-data
+mkdir /usr/local/hadoop/yarn
+master   node ==================
+hadoop namenode -format
+ls /usr/local/hadoop/hd-data/nn
+ls /usr/local/hadoop/hd-data/nn/current/
+start-dfs.sh
+now try to ping each other
+create a dir and file.txt and try to copy or move in master                 
+login to the browser
+http://master:9870
+===========================================================
+now add a new node datanode (DN3)
+login to the master
+ ping to each other
+ start-all.sh
+jps
+as we have taken a clone just open a datanode3(DN3)
+need to set the hostname
+sudo hostnamectl set-hostname DN3
+sudo hostname DN3
+ exit
+open new terminal foor apply the changes done
+ ip a                                ......... 192.168.144.132 /24
+master---------     
+sudo nano /etc/hosts
+192.168.144.132 DN3
+nano /usr/local/hadoop/etc/hadoop/workers
+edit this file and DN3
+DN3
+Datanode2---------     
+jps
+sudo nano /etc/hosts        
+edit this file
+192.168.144.132 DN3
+scp /etc/hosts hduser@DN3:/home/hduser    .......  copying the hostfile from DN2  and pate it DN3 
+if we want to copy same file that are too much at same dest use the below command 
+rsync -a /usr/local/hadoop/etc/hadoop/* hduser@DN3:/usr/local/hadoop/etc/hadoop
+Datanode3----------     
+cd
+cat /etc/hosts
+cd
+ls
+sudo cp hosts /etc/hosts
+cat /etc/hosts
+ping master
+hadoop-daemon.sh start datanode      ...(to start a individual machine use this command)
+jps
+Datanode1---------     
+cd Desktop
+jps
+sudo nano /etc/hosts
+edit this file 
+192.168.144.132 DN3
+master------------    
+hdfs dfsadmin -refreshnodes              .......(and refersh in browser)
+Datanode3----------    
+cd Desktop
+yarn-daemon.sh start manager
+jps
+master-----------    
+now in master you can create a dir and file and can perform any opertaion
 
 
 
