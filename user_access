@@ -1,0 +1,48 @@
+cerate user account master-
+sudo adduser data1
+su - data1
+sudo nano /etc/bash.bashrc
+export PATH=$PATH:/usr/local/hadoop/bin:/usr/hadoop/sbin
+nano data1.txt
+hdfs dfs -mkdir /data1
+hdfs dfs -chown data1 /data1
+su - data1
+hdfs dfs -put data1.txt /data1
+
+sudo addgroup project1
+sudo adduser --ingroup project1 dev1
+sudo adduser --ingroup project1 dev2
+hdfs dfs -mkdir /proj1
+hdfs dfs -chown dev1:project1 /proj1
+hdfs dfs -chmod g+w /proj1
+su - dev1
+nano dev1.txt
+hdfs dfs -put dev1.txt /proj1
+hdfs dfs -put dev1.txt /demo
+exit
+su - dev2
+nano dev2
+hdfs dfs -put dev2.txt /proj1
+dn3---
+ls -all
+fsimage - 246 at dn3 246 at master
+----------------------------------
+sudo addgroup youtube
+sudo addgroup twitter
+sudo adduser --ingroup youtube mohit
+sudo adduser --ingroup twitter vikas
+hdfs dfs -mkdir /youtube
+hdfs dfs -chown mohit:youtube /youtube
+hdfs dfs -mkdir /twitter
+hdfs dfs -chown vikas:twitter /twitter
+hdfs dfs -chmod g+w /youtube
+hdfs dfs -chmod g+w /twitter
+sudo addgroup nlp
+sudo adduser --ingroup nlp manisha
+sudo adduser --ingroup nlp rohit
+hdfs dfs -mkdir /nlp
+hdfs dfs -chown manisha:nlp /nlp
+hdfs dfs -chown rohit:nlp /nlp
+hdfs dfs -chmod g+w /nlp
+hdfs dfs -chown manisha:nlp /nlp
+hdfs dfs -chmod g+w /nlp
