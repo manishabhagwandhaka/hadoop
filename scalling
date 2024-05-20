@@ -27,6 +27,13 @@ sudo cp hosts /etc/hosts
 ping master
 master--
 ssh-copy-id -i ~/.ssh/is_rsa.pub hduser@DN3
+dn3----
 hadoop-daemon.sh start datanode
+hadoop-daemon.sh start
+/usr/local/hadoop/bin
+yarn-daemon.sh start nodemanager
+if web master:9870 not showing dn3 then cmd
+master---
+hdfs dfsadmin -refreshNodes
 tail hadoop-hduser-datanode ...log
 
