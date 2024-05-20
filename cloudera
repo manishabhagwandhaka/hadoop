@@ -1,3 +1,44 @@
 wget https://archive.cloudera.com/cm7/7.4.4/cloudera-manager-installer.bin
 $ chmod u+x cloudera-manager-installer.bin
 $ sudo ./cloudera-manager-installer.bin
+make vm user hduser 10000 gb ram upadate centos 7.9.2000
+paddwdless ssh sudo visudo
+make to clone of it
+manager--
+ip a
+nn1---
+ip a
+dn1---
+ip a
+manager---
+sudo nano /etc/hosts
+ip manager
+ip nn1
+ip dn1
+ssh-keygen -t rsa
+ssh-copy-id -i ~/.shh/id_rsa.pub hduser@manager
+ssh-copy-id -i ~/.shh/id_rsa.pub hduser@nn1
+ssh-copy-id -i ~/.shh/id_rsa.pub hduser@dn1
+sudo netstat -pltn
+wget https://archive.cloudera.com/cm7/7.4.4/cloudera-manager-installer.bin
+$ chmod u+x cloudera-manager-installer.bin
+$ sudo ./cloudera-manager-installer.bin
+sudo ./cloudera-manager-installer.bin
+sudo service cloudera-scm-server start
+sudo vi /etc/selinus/config
+SELINUX=disabled
+sudo setenforce 0
+browser-
+localhost:7180
+user=admin
+pass=admin
+
+cp ~/.ssh/id_rsa .
+browser all
+localhost:7180
+service cloudera-scm-server-dbstart
+service cloudera-scm-server start
+service cloudera-scm-agent start
+sudo -u hdfs dfs -mkdir /user/sam
+dn1=9870
+ssh -t hduser@dn1 sudo yum install httpd -y
