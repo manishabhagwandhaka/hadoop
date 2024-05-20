@@ -26,3 +26,5 @@ hdfs dfs -mkdir /wordcount/input
 hdfs dfs -put wordcount.txt /wordcount/input
 hadoop jar wc.jar WordCount /wordcount/input /wordcount/output
 hdfs dfs -cat /wordcount/output/part-r-00000
+ssh -t hduser@DN1 sudo init 0
+ssh -t hduser@
