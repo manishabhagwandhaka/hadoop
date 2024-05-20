@@ -1,0 +1,51 @@
+master  ===================
+    cd 
+    hdfs dfs -ls /
+    hdfs dfsadmin -printTopolgy    .. Check the current rack information using following command
+    nano rack1.txt
+          this is a rack file 1
+    hdfs dfs -put rack1.txt /
+    hdfs fsck /rack1.txt -blocks
+    hdfs fsck /rack1.txt -files -blocks -locations  
+    hdfs fsck /rack1.txt -files -blocks -locations -racks   .. Now check on which nodes the file is copied. For this use 
+                                                                  following command
+    nano racks.txt
+       this is a rack file 2
+    hdfs dfs -copyFromLocal rack2.txt /
+    hdfs fsck /rack2.txt -files -blocks -racks -locations
+    cd /usr/local/hadoop/etc/hadoop
+       nano rack-info.py
+          #!/usr/bin/env python
+          import sys
+          DEFAULT_RACK = "/default/default" HOST_RACK_FILE = "/usr/local/hadoop/etc/hadoop/rack-map.txt" host_rack = {}
+          for line in open(HOST_RACK_FILE):
+          (host, rack) = line.split()
+          host_rack[host] = rack
+          for host in sys.argv[1:]:
+          if host in host_rack:
+          print host_rack[host]
+          else:
+          print DEFAULT_RACK
+    chmod u+x rack-info.py
+    nano rack-map.txt
+           DN1 /default/rack0
+           DN2 /default/rack0
+           DN3 /default/rack1
+    nano rack-info.py
+           DN3 /deafult/rack1
+    stop-dfs.sh
+    start-dfs.sh
+    hdfs dfsadmin -printTopology
+    cd../../logs
+    ls
+    cat hadoop-hduser
+    cat hadoop-hduser-namenode-master.log | grep rack-info.py
+    cd ../etc/hadoop
+    nano core-site.xml
+          <property>
+          <name>net.topology.script.file.name</name>
+          <value>/usr/local/hadoop/etc/hadoop/topology.py</value>
+          </property>
+    stop-all.sh
+    start-all.shh
+    hdfs dfsadmin -printTopolgy
