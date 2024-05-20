@@ -1,0 +1,28 @@
+hdfs dfs -put demo.txt /hpcsa .....multiple file copy
+hdfs dfs -ls /data
+hdfs dfs -copyFromLocal
+hdfs dfs copyToLocal /hpcsa/demo.txt .      ===current directory
+hdfs dfs -copyToLocal /data/*.txt .
+rm -rf *.txt
+hdfs dfs -get /data/*.txt
+hdfs dfs -h
+hdfs dfs -mv rsult.txt /hpcsa ......hdfs to hdfs
+hdfs dfs moveFromLocal result.txt /hpcasa
+hdfs dfs -rm -r -f /hpcsa
+hdfs dfs -getmerge /output/text.txt /output/text2.txt result.txt
+sudo nano /etc/resolve.conf
+192.168.72.20 dns server
+netstat -pltn
+hdfs dfs -stat /demo.txt
+hdfs dfs -mv /demo.txt /newdemo.txt ...rename file
+>export HADOOP_CLASSPATH=$(hadoop classpath)
+export CLASSPATH=$CLASSPATH:$(hadoop classpath)
+sudo visudo
+javac -classpath $HADOOP_CLASSPATH WordCount
+jar cf wc.jar WordCount*.class
+nano wordcount.txt
+hdfs dfs -mkdir /wordcount
+hdfs dfs -mkdir /wordcount/input
+hdfs dfs -put wordcount.txt /wordcount/input
+hadoop jar wc.jar WordCount /wordcount/input /wordcount/output
+hdfs dfs -cat /wordcount/output/part-r-00000
