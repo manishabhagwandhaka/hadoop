@@ -3,6 +3,7 @@ Download Apache Pig in hduser home directory.
 https://mirrors.estointernet.in/apache/pig/pig-0.16.0/pig-0.16.0.tar.gz
 extract the tar file.-
 tar -xvf pig-0.16.0.tar.gz 
+sudo  mv pig-0.16.0 /usr/local
 Open the bashrc file -
 sudo nano ~/.bashrc  
 add the following Pig environment variables.
@@ -40,6 +41,22 @@ Type following
 004,Soham,21,Pune
 Save the file.
 Then start pig in interactive mode. And type following 
-demo  =   LOAD '/pig-test/demo.txt' USING PigStorage(',') 
+demo  =   LOAD '/home/hduser/demo.txt' USING PigStorage(',') 
    as (id:int,name:chararray,age:int,city:chararray);
 dump demo;
+
+hdfs dfs -mkdir /pig-test
+hdfs dfs -put demo.txt /pig-test
+pig
+demo1 = load '/pig-test/demo.txt' USING PigStorage(',') 
+ as (id:int,name:chararray,age:int,city:chararray);
+ hduser@master
+ cd /usr/local/hadoop/sbin
+ ls
+ hdfs dfs -chmod -R 755 /tmp
+ mr-jobhistory-daemon.sh start historyserver
+ jps
+ pig
+ grunt
+ dump demo1;
+ 
