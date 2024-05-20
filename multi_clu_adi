@@ -1,0 +1,438 @@
+master
+
+cd Desktop
+   sudo adduser hduser 
+   sudo visudo
+      hduser ALL=(ALL) NOPASSWD: ALL
+   logout
+
+==========================================
+
+login with the new user hduser
+open terminal
+    cd Desktop
+       - firstly set the dns to avoid error during the update while installing something (follow the below command)
+           sudo nano /etc/resolv.conf
+               nameserver 192.168.72.20                          ...............   put this in file this is a cdac dns number
+           sudo apt update -y
+           sudo apt upgrade -y
+           sudo apt install ssh vim pdsh openjdk-8-jdk git -y
+           sudo apt install net-tools -y
+
+
+  -----------------------------   now hadoop installation    -----------------------
+
+        go to browser and search(below link)
+                  apache hadoop download 
+                  and click on first link
+                  click oon binary download (first one)
+                  hadoop version 3.4.0 (latest one)
+                            or
+                  go to terminal 
+                  cd Downloads
+                  wget -c -O hadoop.tar.gz https://dlcdn.apache.org/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz
+
+        after download extract it now
+                  sudo mkdir /usr/local/hadoop
+                  - go to downloads dir
+                  cd Downloads
+                  ls 
+                  tar xvzf hadoop-3.4.0.tar.gz        .................. (hadoop-3.4.0.tar.gz     filename which is downloaded)
+                  sudo mv hadoop-3.4.0/* /usr/local/hadoop           .................. copying the file
+                  sudo chown -R hduser:hduser /usr/local/hadoop      .................. hduser   is a username
+                  sudo chmod -R 755 /usr/local/hadoop
+
+                  cd /usr/lib/jvm/java-8-openjdk-amd64/
+                  pwd                                   ................ (copy the below path)
+                       output                   /usr/lib/jvm/java-8-openjdk-amd64   
+                  nano ~/.bashrc
+                          edit this file
+                        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+                        export JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+                        export HADOOP_HOME=/usr/local/hadoop
+                        export HADOOP_MAPRED_HOME=$HADOOP_HOME
+                        export HADOOP_YARN_HOME=$HADOOP_HOME
+                        export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+                        export CLASSPATH=$CLASSPATH:$(hadoop classpath)
+                        export PDSH_RCMD_TYPE=ssh
+
+                   source ~/.bashrc
+
+
+                  - set timezone
+                  - shutdown now
+                      sudo init 0                (logout)
+
+                  - now you are outside the master
+                  - now take a clone
+                     master - rightclick  ->  manage ->  clone  ->  next -> create a full clone -> next -> datanode1 (give the name) -> 
+                      click on finish  . after clone finish
+                      take another clone using the above steps and give the name datanode2
+                      take another clone using the above steps and give the name datanode3
+
+===================================        now we master  , datanode1  , datanode2         =============================
+            now login to master as a (hduser)
+               cd Desktop 
+                 -  now set hostname by using the below command
+                      sudo hostnamectl set-hostname master
+                      sudo hostname master
+               cd /usr/local/hadoop
+               cat ~/.bashrc
+                  - copy the JAVA_HOME                      .......  (copy the JAVA_HOME hole line)
+                    JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+               cd /usr/local/hadoop/etc/hadoop
+               nano hadoop-env.sh
+                   - edit into this file pate at the last which is copied (JAVA_HOME hole line)
+                       JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+               nano core-site.xml  
+                   <configuration>
+                   <property>
+                      <name>fs.defaultFS</name>
+                      <value>hdfs://master:9000</value>
+                   </property>
+                   </configuration>
+
+               nano hdfs-site.xml
+                    <configuration>
+                    <property>
+                        <name>dfs.name.dir</name>
+                        <value>/usr/local/hadoop/hd-data/nn</value>
+                    </property>
+                    <property>
+                        <name>dfs.replication</name>
+                        <value>2</value>
+                    </property>
+                    </configuration>  
+
+
+               nano yarn-site.xml 
+                      <configuration>
+                      <property>
+                          <name>yarn.resourcemanager.hostname</name>
+                          <value>master</value>
+                      </property>
+                      </configuration>
+
+              nano mapred-site.xml
+                      <configuration>
+                      <property>
+                          <name>mapreduce.framework.name</name>
+                          <value>yarn</value>
+                      </property>
+                      <property>
+                          <name>mapreduce.application.classpath</name>
+                          <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+                      </property>
+                      </configuration>
+
+
+             - now tell masterr which worker nodes are there
+                   nano workers
+                                --- edit this file
+                                       # remove localhost
+                                       DN1
+                                       DN2
+
+               login to the datanode1(DN1)    by hduser
+                    cd Desktop
+                    sudo hostnamectl set-hostname DN1
+                    sudo hostname DN1
+                    ip a                         .... (192.168.144.130 /24)
+
+
+               go to master 
+                  - check ip
+                       ip a                      ..... (192.168.255.129 /24)
+                  sudo nano /etc/hosts          
+                      - need to edit this file and make entry of IP
+                   192.168.144.129 master
+                   192.168.144.130 DN1
+                   192.168.144.131 DN2
+
+
+               got to datanode2(DN2)
+                   cd Desktop
+                   sudo hostnamectl set-hostname DN2
+                   sudo hostname DN2
+                   ip a                           ..... 192.168.144.131 /24
+
+
+               go to master
+                  cd Desktop
+                  ssh-keygen -t rsa
+                  ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@DN1
+                  
+                  - now copy same to DN2 also
+                       ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@DN2
+                       ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@master
+
+                  scp /etc/hosts hduser@DN1 :/home/hduser
+                  scp /etc/hosts hduser@DN2 :/home/hduser
+
+
+                 --  now copy the hadoop file which are common 
+
+                scp /usr/local/hadoop/etc/hadoop/core-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop/
+                scp /usr/local/hadoop/etc/hadoop/core-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop/
+
+                scp /usr/local/hadoop/etc/hadoop/hdfs-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop/
+                scp /usr/local/hadoop/etc/hadoop/hdfs-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop/
+ 
+                scp /usr/local/hadoop/etc/hadoop/yarn-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop/
+                scp /usr/local/hadoop/etc/hadoop/yarn-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop/
+
+                scp /usr/local/hadoop/etc/hadoop/mapred.xml hduser@DN1:/usr/local/hadoop/etc/hadoop/
+                scp /usr/local/hadoop/etc/hadoop/mapred.xml hduser@DN2:/usr/local/hadoop/etc/hadoop/
+
+                scp /usr/local/hadoop/etc/hadoop/hadoop-env.sh hduser@DN1:/usr/local/hadoop/etc/hadoop/
+                scp /usr/local/hadoop/etc/hadoop/hadoop-env.sh hduser@DN2:/usr/local/hadoop/etc/hadoop/
+
+
+                     -------------- go to datanode1
+                        cd Desktop
+                        ls
+                        sudo cp hosts /etc/hosts
+                        cd /usr/local/hadoop/etc/hadoop
+                        nano hdfs-site.xml
+                              <configuration>
+                              <property>
+                                  <name>dfs.data.dir</name>
+                                  <value>/usr/local/hadoop/hd-data/dn</value>
+                              </property>
+                              <property>
+                                  <name>dfs.replication</name>
+                                  <value>2</value>
+                              </property>
+                              </configuration>
+
+
+                        nano yarn-site.xml
+                                  <configuration>
+                                  <property>
+                                      <name>yarn.resourcemanager.hostname</name>
+                                      <value>master</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.aux-services</name>
+                                      <value>mapreduce_shuffle</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.local-dirs</name>
+                                      <value>/usr/local/hadoop/hd-data/yarn/data</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.logs-dirs</name>
+                                      <value>/usr/local/hadoop/hd-data/yarn/logs</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.disk-health-checker.max-disk-utilization-perdisk-percentage</name>
+                                      <value>99.9</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.vmem-check-enabled</name>
+                                      <value>false</value>
+                                  </property>
+                                  <property>
+                                      <name>yarn.nodemanager.env-whitelist</name>
+                                      <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+                                  </property>
+                                  </configuration>
+
+                          
+
+                          scp hdsf-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+                          scp yarn-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+
+
+                        ========    now go to the master   node ==================
+
+                                make a dir
+                                   cd Desktop
+                                   mkdir /usr/local/hadoop/hd-data
+
+                        ========    now go to the datanode (DN1) ==================
+                          
+                                  mkdir /usr/local/hadoop/hd-data
+                                  mkdir /usr/local/hadoop/yarn
+           
+                      ========    now go to the datanode (DN2) ==================
+                          
+                                  mkdir /usr/local/hadoop/hd-data
+                                  mkdir /usr/local/hadoop/yarn
+
+
+                     ========    now go to the master   node ==================
+
+                                  hadoop namenode -format
+                                  ls /usr/local/hadoop/hd-data/nn
+                                  ls /usr/local/hadoop/hd-data/nn/current/
+                                  start-dfs.sh
+
+
+                        now try to ping each other
+                             create a dir and file.txt and try to copy or move in master
+                 
+                                      login to the browser
+                                            http://master:9870
+
+
+
+===========================================================================================================================================
+
+
+                                     now add a new node datanode (DN3)
+
+                             login to the master
+                                     ping to each other
+                                     start-all.sh
+                                     jps
+
+                           as we have taken a clone just open a datanode3(DN3)
+                                need to set the hostname
+                                    sudo hostnamectl set-hostname DN3
+                                    sudo hostname DN3
+                                    exit
+                                       open new terminal foor apply the changes done
+                                    ip a                                ......... 192.168.144.132 /24
+
+
+                                  ===================      go to master     =================
+                                         sudo nano /etc/hosts
+                                            192.168.144.132 DN3
+                                         nano /usr/local/hadoop/etc/hadoop/workers
+                                                   edit this file and DN3
+                                                        DN3
+
+                                   ===================      go to Datanode2     =================
+
+                                         jps
+                                         sudo nano /etc/hosts        
+                                              edit this file
+                                                   192.168.144.132 DN3
+
+                                          scp /etc/hosts hduser@DN3:/home/hduser        .......  copying the hostfile from DN2  and pate it DN3 
+                                                 if we want to copy same file that are too much at same dest use the below command 
+                                          rsync -a /usr/local/hadoop/etc/hadoop/* hduser@DN3:/usr/local/hadoop/etc/hadoop
+
+                                    
+                                   ===================      go to Datanode3     =================
+
+                                              cd
+                                              cat /etc/hosts
+                                              cd
+                                              ls
+                                              sudo cp hosts /etc/hosts
+                                              cat /etc/hosts
+                                              ping master
+                                              hadoop-daemon.sh start datanode                 ...(to start a individual machine use this command)
+                                              jps
+
+                                 ===================      go to Datanode1     =================
+
+                                             cd Desktop
+                                               jps
+                                               sudo nano /etc/hosts
+                                                        edit this file 
+                                                           192.168.144.132 DN3
+
+
+                               ===================      go to master    =================
+
+                                            hdfs dfsadmin -refreshnodes                     .......(and refersh in browser)
+
+
+                              ===================      go to Datanode3     =================
+
+                                          cd Desktop
+                                          yarn-daemon.sh start manager
+                                          jps
+                                
+                                ===================      go to master    =================
+                        
+                                       now in master you can create a dir and file and can perform any opertaion
+
+
+
+===============================================================================================================================
+
+
+                  ==================      Decommissioned    ===================
+
+                                  go to master
+
+                                        cd /usr/local/hadoop/etc/hadoop
+                                        nano hdfs-site.xml
+                                                   <configuration>
+                                                   <property>
+                                                   <name>dfs.name.dir</name>
+                                                   <value>/usr/local/hadoop/hd-data/nn</value>
+                                                   </property>
+                                                   <property>
+                                                   <name>dfs.replication</name>
+                                                   <value>2</value>
+                                                   </property>
+                                                   <property>
+                                                   <name>dfs.hosts.exclude</name>
+                                                   <value>/usr/local/hadoop/exclude/hosts.exclude</value>   
+                                                   </property>
+                                                   </configuration>
+
+                                              cd /usr/local/hadoop
+                                                      make dir in that
+                                              mkdir exclude
+                                              cd exclude
+                                              nano hosts.exclude
+                                                 edit this file
+                                                      DN2
+
+                                              hdfs dfsadmin -refreshnodes
+                                                 now to browser and check
+                                                    http://master:9870
+
+
+
+
+===============================================================================================================================
+
+                                        
+                 
+
+                      ==================      Decommissioned and dead  ===================
+
+                                  go to master
+
+                                        cd /usr/local/hadoop/etc/hadoop
+                                        nano hdfs-site.xml
+                                                   <configuration>
+                                                   <property>
+                                                   <name>dfs.name.dir</name>
+                                                   <value>/usr/local/hadoop/hd-data/nn</value>
+                                                   </property>
+                                                   <property>
+                                                   <name>dfs.replication</name>
+                                                   <value>2</value>
+                                                   </property>
+                                                   <property>
+                                                   <name>dfs.hosts.exclude</name>
+                                                   <value>/usr/local/hadoop/exclude/hosts.exclude</value>   
+                                                   </property>
+                                                   </configuration>
+
+                                              cd /usr/local/hadoop
+                                                      make dir in that
+                                              mkdir exclude
+                                              cd exclude
+                                              nano hosts.exclude
+                                                 edit this file
+                                                      DN2
+
+                                              hdfs dfsadmin -refreshnodes
+                                              cd etc
+                                              cd hadoop
+                                              nano workers
+                                                remove DN3 from this file       (remove that node only which is to demoss and dead)
+
+                                                 now to browser and check
+                                                    http://master:9870
