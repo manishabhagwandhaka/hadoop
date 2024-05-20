@@ -1,0 +1,23 @@
+cd /usr/local/hadoop/hd-data
+ls
+tar -cvzf ~/namenode-bak.tar.gz nn
+cd
+ls
+tar -tvzf namenode-bak.tar.gz
+cd /usr/local/hadoop/hd-data
+stop-all.sh
+ls
+cd nn
+rm -rf *
+ls
+start-all.sh
+cd ..
+hdfs dfs -ls /
+cp ~/namenode-bak.tar.gz
+ls
+tar xvzf namenode-bak.tar.gz
+cd nn
+hadoop-daemon.sh start namenode
+jps
+hdfs dfs -ls /
+
