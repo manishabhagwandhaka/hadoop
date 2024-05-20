@@ -1,0 +1,132 @@
+master node ---
+sudo adduser hduser
+sudo visudo
+hduser ALL=(ALL) NOPASSWD:ALL
+sudo nano /etc/resolv.conf
+nameserver 192.168.72.20
+sudo apt update -y
+sudo apt install ssh vim pdsh openjdk-8-jdk git -y
+sudo mkdir /usr/local/hadoop
+sudo apt install net-tools -y
+sudo systemctl start ssh
+sudo systemctl enable ssh
+apache hadoop download frist binary hadoop-3-4-0.tar.gz
+or
+wget -c -O hadoop.tar.gz https://dlcdn.apache.org/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz
+tar -xvzf hadoop-3.4.0.tar.gz
+sudo mv hadoop-.3.4.0/* /usr/local/hadoop
+la -all /usr/local/hadoop
+sudo chown -R hduser:hduser /usr/local/hadoop
+sudo chown -R 755 /usr/local/hadoop
+nano .bashrc
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+export HADOOP_HOME=/usr/local/hadoop
+export HADOOP_MARPED_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export CLASSPATH=$CLASSPATH:$(hadoop classpath)
+export PDSH_RCMD_TYPE=ssh
+source .bashrc
+activity<-
+change date
+sudo init 0
+creating clone
+secondaryNN
+DN1
+DN2
+master---
+sudo hostnamectl set-hostname master
+sudo hostaname master
+cat ~/.bashrc
+copy JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+sudo nano hadoop.env.sh
+paste here
+sudo nano core-site.xml
+<property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://master:9000</value>
+    </property>
+sudo nano hdfs-site.xml
+<property>
+        <name>dfs.name.dir</name>
+        <value>/usr/local/hadoop/hd-data/nn</value>
+    </property>
+    <property>
+        <name>dfs.replication</name>
+        <value>2</value>
+    </property>
+    <property>
+    <name>dfs.namenode.secondary.http-address</name>
+    <value>SNN:9869</value>
+    </property>
+sudo nano yarn-site.xml
+ <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>master</value>
+    </property>
+sudo mapred-site.xml
+<property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+    </property>
+nano worker
+DN1
+DN2
+secondary---
+ip a
+dn1---
+ip a
+dn2---
+ip a
+master---
+ip a
+sudo nano /etc/hosts
+192.168.144.129 master
+192.168.144.140 SNN
+192.168.144.130 DN1
+192.168.144.131 DN2
+frist ssh config then copy all files of master in secondary dn1 dn2
+ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@master
+ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@SNN
+ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@DN1
+ssh-copy-id -i ~/.ssh/id_rsa.pub hduser@DN2
+ssh hduser@master
+cd /usr/local/hadoop
+scp /etc/hosts hduser@SNN:/home/hduser
+scp /etc/hosts hduser@DN1:/home/hduser
+scp /etc/hosts hduser@DN2:/home/hduser
+scp /usr/local/hadoop/etc/hadoop/core-site.xml hduser@SNN:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/core-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/core-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hdfs-site.xml hduser@SNN:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hdfs-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hdfs-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/yarn-site.xml hduser@SNN:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/yarn-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/yarn-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/mapred-site.xml hduser@SNN:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/mapred-site.xml hduser@DN1:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/mapred-site.xml hduser@DN2:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hadoop.env.sh hduser@SNN:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hadoop.env.sh hduser@DN1:/usr/local/hadoop/etc/hadoop
+scp /usr/local/hadoop/etc/hadoop/hadoop.env.sh hduser@DN2:/usr/local/hadoop/etc/hadoop
+secondary----
+nano hdfs-site-xml
+<property>
+        <name>dfs.namenode.checkpoint.dir</name>
+        <value>/usr/local/hadoop/hd-data/snn</value>
+    </property>
+#--------------------
+checkpoint duration by default 1hr
+dfs.namenode.checkpoint.period
+1800
+#-------------------------------
+
+dn1---
+core-site.xml same
+hdfs-site.xml
