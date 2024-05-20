@@ -1,0 +1,13 @@
+savenamespace---
+  nano h1.txt
+  nano h2.txt
+hdfs dfs -mkdir /data1
+hdfs dfs -mkdir /data2    
+hdfs dfs -put h1.txt /data1
+hdfs dfs -put h2.txt /data2
+hdfs dfsadmin -safemode enter
+hdfs dfsadmin -saveNamespace
+hdfs dfsadmin -savemode leave
+..
+  /usr/local/hadoop/hd-data/nn/current
+  ls -all
