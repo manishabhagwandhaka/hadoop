@@ -1,0 +1,32 @@
+scalling dn3-----add new datanode without stopping it
+master---
+ping master
+ping DN1
+ping DN2 ...check ip sometime ip will change
+start-all.sh
+web=http://master:9870
+dn3---on
+ip a
+master--
+sudo nano /etc/hosts
+192.168.144.132  DN3
+nano /usr/local/hadoop/etc/hadoop/workers
+DN3
+dn3--confi
+master is already running
+dn1----
+sudo nano /etc/hosts
+192.168.144.132 DN3
+dn2----
+sudo nano /etc/hosts
+192.168.144.132 DN3
+scp /etc/hosts hduser@DN3:/home/hduser
+rsync -a /usr/local/hadoop/etc/hadoop/* hduser@DN3:/usr/local/hadoop/etc/hadoop
+dn3----
+sudo cp hosts /etc/hosts
+ping master
+master--
+ssh-copy-id -i ~/.ssh/is_rsa.pub hduser@DN3
+hadoop-daemon.sh start datanode
+tail hadoop-hduser-datanode ...log
+
