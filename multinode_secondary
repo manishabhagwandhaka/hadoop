@@ -1,4 +1,4 @@
-master node ---
+ master node ---
 sudo adduser hduser
 sudo visudo
 hduser ALL=(ALL) NOPASSWD:ALL
@@ -268,7 +268,8 @@ jps
 master-----------    
 now in master you can create a dir and file and can perform any opertaion
 
-
+hdfs --daemon stop secondarynamenode
+hdfs --daemon start secondarynamenode
 
 ===============================================================================================================================
 
