@@ -1,0 +1,10 @@
+master---
+  nano hdfs-site.xml
+  <name>dfs.hosts.exclude</name>
+  <value>/usr/local/hadoop/exclude/hosts.exclude</value>
+  hadoop--
+  mkdir exclude
+  nano hosts.exclude
+  DN3
+  hdfs dfsadmin -refreshNodes
+  
