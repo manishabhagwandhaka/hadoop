@@ -7,4 +7,21 @@ master---
   nano hosts.exclude
   DN3
   hdfs dfsadmin -refreshNodes
-  
+  //recommission
+dn3---
+hadoop-daemon.sh start datanode
+yarn-daemon.sh start nodemanager
+hdfs dfsadmin -refreshNodes
+master---
+nano hosts.exclude
+DN3 remove it
+hdfs dfsadmin -refreshNodes
+web refresh
+//permanent delete node
+decommition and workers remove node
+nano hosts.exclude
+hdfs dfsadmin -refreshNodes
+nano workers
+DN3 remove
+hdfs dfsadmin -refreshNodes
+
